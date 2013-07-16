@@ -1,0 +1,88 @@
+<% amount_in_cents = @order.total.to_money("EUR").cents %>
+<%= hidden_field_tag "silent", "1" %>
+<%= hidden_field_tag "ipayment_session_id",
+  payment_method.create_session(
+    amount_in_cents,
+    ipayment_success_order_checkout_url(@order, :token => @order.token, :payment_method_id => payment_method.id),
+    @order.number,
+    ipayment_error_order_checkout_url(@order, :token => @order.token, :payment_method_id => payment_method.id),
+  )
+%>
+
+<div>
+  <%= radio_button_tag "order[payments_attributes][][payment_method_id]", "ipayment_elv", params["payment_method_id"].to_i==payment_method.id %>
+  <div class='option-details'>
+    <input type="image" id="ipayment" src="<%= asset_path("store/images/elv_logo.jpg") %>" align="left" style="margin-right:7px;"/><span id="elv_text" style="cursor: pointer;">(Lastschrift-<br/>verfahren)</span>
+    <div class="clear"/>
+    <br/>
+    <div id="ipayment_elv" style="display: none;">
+      <table>
+        <tr><td style="width:200px;"><%= label_tag :bank_accountnumber, "Kontonummer" %></td><td style="width:500px;"><%= text_field_tag :bank_accountnumber %></td></tr>
+        <tr><td><%= label_tag :bank_code, "Bankleitzahl" %></td><td><%= text_field_tag :bank_code %></td></tr>
+        <tr><td><%= label_tag :bank_name, "Bankname" %></td><td><%= text_field_tag :bank_name %></td></tr>
+        <tr><td><%= label_tag :bank_country, "Land" %></td><td><%= select_tag :bank_country, options_for_select({ "Deutschland" => "DE", "Österreich" => "AT" }, payment_method.get_current_country_code(current_city)) %></td></tr>
+        <tr><td><%= label_tag :bank_iban, "IBAN*" %></td><td><%= text_field_tag :bank_iban %></td></tr>
+        <tr><td><%= label_tag :bank_bic, "BIC*" %></td><td><%= text_field_tag :bank_bic %></td></tr>
+      </table>
+      <small>* Die Eingabe von IBAN und BIC ersetzt Kontonummer und Bankleitzahl.</small>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript" charset="utf-8">
+  $(function() {
+    var orig_post_url = $("#checkout_form_payment").attr("action");
+    var ipayment_url = "<%= payment_method.ipayment_url %>";
+    function updateFormURL(event) {
+      var el = $("input[type=radio]:checked");
+      if(el.val()=="ipayment_elv") {
+        $("#ipayment_elv").show(150);
+        $("#checkout_form_payment").attr("action", ipayment_url);
+      } else {
+        $("#ipayment_elv").hide(150);
+        $("#checkout_form_payment").attr("action", orig_post_url);
+      }
+    }
+    
+    $("#elv_text").add($("input[type=image]")).click(function(event) {
+      var el = $(this);
+      var radio = el.parent().parent().find("input[type=radio]");
+      radio.click();
+      var isIpayment = el.attr("id")=="ipayment";
+      if(isIpayment) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+    
+    $("input[type=radio]").change(updateFormURL);
+    updateFormURL();
+    
+    function formChanged(event) {
+      $("#bank_iban").removeAttr('disabled');
+      $("#bank_bic").removeAttr('disabled');
+      $("#bank_accountnumber").removeAttr('disabled');
+      $("#bank_code").removeAttr('disabled');
+      $("#bank_name").removeAttr('disabled');
+      $("#bank_country").removeAttr('disabled');
+    
+      if($("#bank_accountnumber").val()!="" || $("#bank_code").val()!="" || $("#bank_name").val()!="") {
+        $("#bank_iban").attr('disabled', 'disabled');
+        $("#bank_bic").attr('disabled', 'disabled');
+      } else if($("#bank_iban").val()!="" || $("#bank_bic").val()!="") {
+        $("#bank_accountnumber").attr('disabled', 'disabled');
+        $("#bank_code").attr('disabled', 'disabled');
+        $("#bank_name").attr('disabled', 'disabled');
+        $("#bank_country").attr('disabled', 'disabled');
+      }
+    }
+    
+    $("#bank_accountnumber").on('input', formChanged);
+    $("#bank_code").on('input', formChanged);
+    $("#bank_name").on('input', formChanged);
+    $("#bank_iban").on('input', formChanged);
+    $("#bank_bic").on('input', formChanged);
+  });
+</script>
