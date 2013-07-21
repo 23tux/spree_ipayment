@@ -46,7 +46,7 @@ module Spree
         },
         processorUrls: {
           redirectUrl: redirect_url,
-          silentErrorUrl: silent_error_url # for now we don't need this. maybe later #TODO
+          # silentErrorUrl: silent_error_url # for now we don't need this. maybe later #TODO
           #hiddenTriggerUrl
         }
       })
