@@ -46,6 +46,10 @@
     }
     
     $("#elv_text").add($("input[type=image]")).click(function(event) {
+      // indicates, if the user has used the enter key inside an input field, to submit the form
+      if(event.pageX==0 && event.pageY==0) {
+        return true;
+      }
       var el = $(this);
       var radio = el.parent().parent().find("input[type=radio]");
       radio.click();

@@ -16,6 +16,8 @@ module Spree
     end
 
     def ipayment_error
+      redirect_to "#{checkout_state_path(:payment)}?payment_method_id=#{params["payment_method_id"]}",
+      flash: {error: "#{params["ret_errormsg"]} #{params["ret_additionalmsg"]}"}
     end
 
     def find_or_create_ipayment_payment(order, params)
@@ -32,6 +34,7 @@ module Spree
         payment.source = transaction
         payment.save!
       else
+        order.payments.destroy_all
         payment = order.payments.create({
           :amount => params[:trx_amount],
           :source => transaction,
@@ -46,6 +49,7 @@ module Spree
     def ipayment_finalize
       @order.update_attributes({ :state => 'complete', :completed_at => Time.current }, :without_protection => true)
       @order.finalize!
+      flash.notice = t(:order_processed_successfully)
       redirect_to completion_route
     end
 
