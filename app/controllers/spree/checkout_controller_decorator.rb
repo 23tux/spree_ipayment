@@ -17,7 +17,7 @@ module Spree
 
     def ipayment_error
       redirect_to "#{checkout_state_path(:payment)}?payment_method_id=#{params["payment_method_id"]}",
-      flash: {error: "#{params["ret_errormsg"]} #{params["ret_additionalmsg"]}"}
+      flash: {error: "#{params["ret_errormsg"].encode("UTF-8", "ISO-8859-15")} #{params["ret_additionalmsg"].encode("UTF-8", "ISO-8859-15")}"}
     end
 
     def find_or_create_ipayment_payment(order, params)
