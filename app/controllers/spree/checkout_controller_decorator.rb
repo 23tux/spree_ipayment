@@ -1,6 +1,7 @@
 module Spree
   CheckoutController.class_eval do
     def ipayment_success
+      convert_params_to_utf8
       payment = find_or_create_ipayment_payment(@order, params)
 
       if payment.completed?
@@ -16,8 +17,9 @@ module Spree
     end
 
     def ipayment_error
+      convert_params_to_utf8
       redirect_to "#{checkout_state_path(:payment)}?payment_method_id=#{params["payment_method_id"]}",
-      flash: {error: "#{params["ret_errormsg"].encode("UTF-8", "ISO-8859-15")} #{params["ret_additionalmsg"].encode("UTF-8", "ISO-8859-15")}"}
+      flash: {error: "#{params["ret_errormsg"]} #{params["ret_additionalmsg"]}"}
     end
 
     def find_or_create_ipayment_payment(order, params)
@@ -55,6 +57,12 @@ module Spree
 
     def fail_ipayment_payment(order, payment)
       payment.failure!
+    end
+
+    def convert_params_to_utf8
+      params.each do |k,v|
+        v.encode!("UTF-8", "ISO-8859-15")
+      end
     end
   end
 end
