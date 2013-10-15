@@ -60,6 +60,11 @@
       var el = $(this);
       var radio = el.parent().parent().find("input[type=radio]");
       radio.click();
+
+      event.preventDefault()
+      // don't submit the form when clicking on the paypal oder ipayment graphic buttons
+      return false;
+
       var isIpayment = el.attr("id")=="ipayment";
       if(isIpayment) {
         return false;
