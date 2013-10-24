@@ -1,5 +1,3 @@
-require 'wirecard/response'
-
 module Spree
   class IpaymentTransaction < ActiveRecord::Base
     has_many :payments, :as => :source
