@@ -24,33 +24,38 @@ module Spree
     end
 
     def create_session amount, redirect_url, shopper_id, silent_error_url
-      response = CLIENT.call(:create_session, message: {
-        accountData: {
-          accountId: preferences[:account_id],
-          trxuserId: preferences[:trxuser_id],
-          trxpassword: preferences[:trxpassword],
-          adminactionpassword: preferences[:adminactionpassword]
-        },
-        transactionData: {
-          trxAmount: amount,
-          trxCurrency: preferences[:trx_currency],
-          shopperId: shopper_id,
-          invoiceText: shopper_id,
-          #trxUserComment: "blabla" # TODO: maybe we use this later
-        },
-        transactionType: "preauth",
-        paymentType: ELV,
-        options: {
-          advancedStrictIdCheck: "1",
-          errorLang: "DE"
-        },
-        processorUrls: {
-          redirectUrl: redirect_url,
-          silentErrorUrl: silent_error_url
-          #hiddenTriggerUrl
-        }
-      })
-      response.body[:create_session_response][:session_id]
+      begin
+        response = CLIENT.call(:create_session, message: {
+          accountData: {
+            accountId: preferences[:account_id],
+            trxuserId: preferences[:trxuser_id],
+            trxpassword: preferences[:trxpassword],
+            adminactionpassword: preferences[:adminactionpassword]
+          },
+          transactionData: {
+            trxAmount: amount,
+            trxCurrency: preferences[:trx_currency],
+            shopperId: shopper_id,
+            invoiceText: shopper_id,
+            #trxUserComment: "blabla" # TODO: maybe we use this later
+          },
+          transactionType: "preauth",
+          paymentType: ELV,
+          options: {
+            advancedStrictIdCheck: "1",
+            errorLang: "DE"
+          },
+          processorUrls: {
+            redirectUrl: redirect_url,
+            silentErrorUrl: silent_error_url
+            #hiddenTriggerUrl
+          }
+        })
+        response.body[:create_session_response][:session_id]
+      rescue Savon::Error => error
+        Airbrake.notify(error)
+        "invalid_session_id"
+      end
     end
 
     def get_current_country_code current_city
