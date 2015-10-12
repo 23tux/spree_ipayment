@@ -19,7 +19,7 @@
 <div>
   <%= radio_button_tag "order[payments_attributes][][payment_method_id]", "ipayment_elv", params["payment_method_id"].to_i==payment_method.id %>
   <div class='option-details'>
-    <input type="image" id="ipayment" src="<%= asset_path("store/images/elv_logo.jpg") %>" align="left" style="margin-right:7px;"/><span id="elv_text" style="cursor: pointer;">(Lastschrift-<br/>verfahren)</span>
+    <input type="image" id="ipayment" src="<%= asset_path("payments/elv_logo.jpg") %>" align="left" style="margin-right:7px;"/><span id="elv_text" style="cursor: pointer;">(Lastschrift-<br/>verfahren)</span>
     <div class="clear"/>
     <br/>
     <div id="ipayment_elv" style="display: none;">
@@ -51,7 +51,7 @@
         $("#checkout_form_payment").attr("action", orig_post_url);
       }
     }
-    
+
     $("#elv_text").add($("input[type=image]")).click(function(event) {
       // indicates, if the user has used the enter key inside an input field, to submit the form
       if(event.pageX==0 && event.pageY==0) {
@@ -72,10 +72,10 @@
         return true;
       }
     });
-    
+
     $("input[type=radio]").change(updateFormURL);
     updateFormURL();
-    
+
     function formChanged(event) {
       $("#bank_iban").removeAttr('disabled');
       $("#bank_bic").removeAttr('disabled');
@@ -83,7 +83,7 @@
       $("#bank_code").removeAttr('disabled');
       $("#bank_name").removeAttr('disabled');
       $("#bank_country").removeAttr('disabled');
-    
+
       if($("#bank_accountnumber").val()!="" || $("#bank_code").val()!="" || $("#bank_name").val()!="") {
         $("#bank_iban").attr('disabled', 'disabled');
         $("#bank_bic").attr('disabled', 'disabled');
@@ -94,7 +94,7 @@
         $("#bank_country").attr('disabled', 'disabled');
       }
     }
-    
+
     $("#bank_accountnumber").on('input', formChanged);
     $("#bank_code").on('input', formChanged);
     $("#bank_name").on('input', formChanged);
