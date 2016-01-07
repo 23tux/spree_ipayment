@@ -17,6 +17,6 @@ Gem::Specification.new do |gem|
   gem.version       = SpreeIpayment::VERSION
 
   gem.add_dependency('spree_core', '>=1.2.0')
-  gem.add_dependency('savon', '~> 2.2.0')
+  gem.add_dependency('savon', '~> 2.11.0')
   gem.add_development_dependency 'rspec-rails'
 end
